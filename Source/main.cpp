@@ -44,16 +44,25 @@ int main(int argc, char** argv) {
         parse_edge_matrix(argv[1]);
         if(input_graph.size() == 0) { return -2; }
     } else if(argc >= 3 && string(argv[2]) == "-l") {
-        parse_edge_list(argv[1]);
-        if(input_graph.size() == 0) { return -2; }
+      parse_edge_list(argv[1]);
+      if (input_graph.size() == 0) { return -2; }
     } else {
         cout << "No Graph Input Type Selected" << endl;
         cout << "Use a \"-m\" flag for edge matrix inputs" << endl;
         cout << "Use a \"-l\" flag for edge list inputs" << endl;
-        return -1;  
+        return -1;
     }
 
-    GraphColor *graph = new HybridDsatur(input_graph);
+    GraphColor *graph = nullptr;
+    if (argc >= 4 && string(argv[4]) == "-a") {
+      if (string(argv[5]) == "tabucol")  {
+        graph = new Tabucol(input_graph);
+      }else {
+        graph = new HybridDsatur(input_graph);
+      }
+    }else{
+      graph = new HybridDsatur(input_graph);
+    }
 
     graph->color();
     graph->print_chromatic();
@@ -79,8 +88,8 @@ vector<string> split(string to_split) {
     unsigned index_start;
     for (unsigned i = 0;i < to_split.length();i++) {
         index_start = i;
-        while(i < to_split.length() && !isspace(to_split.at(i))) { 
-            i++; 
+        while(i < to_split.length() && !isspace(to_split.at(i))) {
+            i++;
         }
         split_string.push_back(to_split.substr(index_start,i - index_start));
     }
@@ -187,8 +196,8 @@ void parse_edge_matrix(char* input_file) {
             vector<string> words = split(line);
             if((int)words.size() != n) {
                 cerr << "Invalid Input, line " << i << " is not the correct length (" << words.size() << "," << n << "): " << line << endl;
-                for (unsigned i = 0;i < words.size();i++) { 
-                    cerr << "\t" << words.at(i) << endl; 
+                for (unsigned i = 0;i < words.size();i++) {
+                    cerr << "\t" << words.at(i) << endl;
                 }
                 input_graph.clear();
                 return;
