@@ -25,6 +25,7 @@ using GraphColoring::GraphColor;
 DEFINE_string(graph, "", "The path to the graph file to be colored");
 DEFINE_string(algorithm, "mcs", "The algorithm to execute on chosen benchmark (dsatur, mcs, lmxrlf, hybrid dsatur, hybrid lmxrlf)");
 DEFINE_string(format, "", "The format of the input graph to be parsed (matrix, list)");
+DEFINE_string(output, "", "The output json file that stored the node categorized by color");
 
 GraphColor* parse_algorithm_flag(map<string,vector<string>> graph) {
     if(FLAGS_algorithm == "dsatur") {
@@ -76,9 +77,16 @@ int main(int argc, char** argv) {
 
     graph->color();
     graph->print_chromatic();
+    //graph->print_coloring();
+
     if(!graph->is_valid()) {
         cerr << "Graph coloring is invalid" << endl;
         return -1;
+    }
+
+    if (FLAGS_output.size() != 0)
+    {
+        graph->saveColoringCategories(FLAGS_output);
     }
 
     return 0;

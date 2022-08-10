@@ -2,8 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "../Header/coloring_algorithm.hpp"
+#include "json.hpp"
 
 using std::cout;
 using std::cerr;
@@ -72,6 +74,30 @@ int GraphColoring::GraphColor::get_num_colors() {
     }
     return max_color + 1;
 }
+
+void GraphColoring::GraphColor::saveColoringCategories(std::string outputFile) {
+    size_t numColors = get_num_colors();
+    vector<vector<int>> categories(numColors);
+
+    for (int iV = 0; iV < size(); iV++) {
+        string node = "v";
+        string temp;
+        std::ostringstream convert;
+        convert << (iV + 1);
+        temp = convert.str();
+        node.append(temp);
+
+        int color = get_color(node);
+        // in this 
+        categories[color].push_back(iV);
+    }
+
+    nlohmann::json j= categories;
+    
+    std::ofstream ofs(outputFile);
+    ofs << j.dump();
+}
+
 
 bool GraphColoring::GraphColor::is_colored() {
     if(this->graph_colors.size() < 1) {
