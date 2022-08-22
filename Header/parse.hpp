@@ -118,6 +118,51 @@ map<string,vector<string>> parse_edge_list(string input_file) {
     return input_graph;
 }
 
+void parse_edge_list(string input_file, vector<vector<int>>& input_graph) {
+
+    ifstream file(input_file);
+    if (file.is_open()) {
+        string line;
+        int vertices = -1;
+        int flag = 0;
+        while (!flag && Getline(file, line)) {
+            while (line.size() == 0) {
+                Getline(file, line);
+            }
+            vector<string> words = split(line);
+            if (words.size() != 0) {
+                if (words[0] == "p") {
+                    vertices = stoi(words[2]);
+                    flag = 1;
+                }
+            }
+        }
+        if (!flag || vertices == -3) {
+            cerr << "File is missing parameter line before edge list" << endl;
+            cerr << "Should be: \"p edge <number of vertices> <number of edges>\"" << endl;
+            return;
+        }
+        input_graph.resize(vertices);
+
+        while (Getline(file, line))
+        {
+            vector<string> words = split(line);
+            if (words[0] == "e") {
+                int node1 = stoi(words[1]) - 1;
+                int node2 = stoi(words[2]) - 1;
+
+                input_graph[node1].push_back(node2);
+                input_graph[node2].push_back(node1);
+            }
+        }
+    }
+    else {
+        cerr << "Input File Not Found" << endl;
+        return;
+    }
+    return;
+}
+
 //Used to parse test inputs where the first line is the number of
 //vertices, and the next lines are the edge matrix
 map<string,vector<string>> parse_edge_matrix(string input_file) {

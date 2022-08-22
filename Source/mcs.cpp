@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <set>
 #include <queue>
-
+#include <list>
 #include "../Header/mcs.hpp"
 
 using std::queue;
@@ -99,5 +99,96 @@ map<string,int> GraphColoring::Mcs::color() {
         this->graph_colors[min] = color;
         ordering.pop();
     }   
+    return this->graph_colors;
+}
+
+vector<int>& GraphColoring::Mcs2::color()
+{
+    std::list<int> temp_graph;
+    for (size_t i = 0; i < graph.size(); i++)
+    {
+        temp_graph.push_back(i);
+    }
+    
+
+    vector<int> weight(temp_graph.size());
+    queue<int> ordering;
+
+    // Initially set the weight of each node to 0
+    for (int i = 0; i < weight.size(); ++i) {
+        weight[i] = 0;
+    }
+
+    // Work through all the nodes in the graph, choosing the node
+    // with maximum weight, then add that node to the queue. Increase
+    // the weight of the queued nodes neighbors by 1. Continue until
+    // every node in the graph has been added to the queue
+    for (int i = 0; i < this->graph.size(); i++) {
+        int max_weight = -1;
+        int max_vertex = -1;
+
+        // Out of the remaining nodes, find the node with the highest weight
+        ;
+        std::list<int>::iterator graphIterMaxW;
+        for (std::list<int>::iterator graphIter = temp_graph.begin(); graphIter != temp_graph.end(); graphIter++) {
+            int nodeId = *graphIter;
+            if (weight[nodeId] > max_weight) {
+                max_weight = weight[nodeId];
+                max_vertex = nodeId;
+                graphIterMaxW = graphIter;
+            }
+        }
+        if (max_vertex == -1) {
+            cerr << "Error: Could not find a max weight node in the graph (reason unknown)" << endl;
+            this->graph_colors = vector<int>();
+            return graph_colors;
+        }
+
+        // Add highest weight node to the queue and increment all of its
+        // neighbors weights by 1
+        ordering.push(max_vertex);
+        for (unsigned j = 0; j < graph[max_vertex].size(); j++) {
+            weight[graph[max_vertex][j]] += 1;
+        }
+
+        // Remove the maximum weight node from the graph so that it won't
+        // be accidentally added again
+        temp_graph.erase(graphIterMaxW);
+    }
+
+    // Work through the queue in order and color each node
+    while (!ordering.empty()) {
+        int color = 0;
+
+        // Find the lowest possible graph_colors for this node between
+        // its neighbors
+        int min = ordering.front();
+
+        //Thanks to Michael Kochte @ Universitaet Stuttgart for the below speedup snippit
+
+        //Collect color numbers of neighbors
+        std::set<int> colorset;
+        for (unsigned i = 0; i < graph[min].size(); i++) {
+            int col = graph_colors[graph[min][i]];
+            colorset.insert(col);
+        }
+
+        //Sort and uniquify
+        vector<int> colorvec;
+        std::copy(colorset.begin(), colorset.end(), std::back_inserter(colorvec));
+        std::sort(colorvec.begin(), colorvec.end());
+
+        //Pick the lowest color not contained
+        int newcolor = 0;
+        for (unsigned i = 0; i < colorvec.size(); i++) {
+            if (colorvec[i] == newcolor) {
+                newcolor++;
+            }
+        }
+        color = newcolor;
+
+        this->graph_colors[min] = color;
+        ordering.pop();
+    }
     return this->graph_colors;
 }

@@ -17,10 +17,12 @@ using std::endl;
 
 using GraphColoring::Dsatur;
 using GraphColoring::Mcs;
+using GraphColoring::Mcs2;
 using GraphColoring::Lmxrlf;
 using GraphColoring::HybridDsatur;
 using GraphColoring::HybridLmxrlf;
 using GraphColoring::GraphColor;
+using GraphColoring::GraphColor2;
 
 DEFINE_string(graph, "", "The path to the graph file to be colored");
 DEFINE_string(algorithm, "mcs", "The algorithm to execute on chosen benchmark (dsatur, mcs, lmxrlf, hybrid dsatur, hybrid lmxrlf)");
@@ -42,6 +44,14 @@ GraphColor* parse_algorithm_flag(map<string,vector<string>> graph) {
     return nullptr;
 }
 
+GraphColor2* parse_algorithm_flag2(vector<vector<int>>& graph) {
+    if (FLAGS_algorithm == "mcs") {
+        return new Mcs2(graph);
+    }
+
+    return nullptr;
+}
+
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
@@ -54,17 +64,18 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    map<string,vector<string>> input_graph;
+    vector<vector<int>> input_graph;
     if(FLAGS_format == "matrix" || FLAGS_format == "m") {
-        input_graph = parse_edge_matrix(FLAGS_graph);
+        //input_graph = parse_edge_matrix(FLAGS_graph);
+        std::cout << "Matrix not supported for graph coloring 2!";
     } else if(FLAGS_format == "list" || FLAGS_format == "l") {
-        input_graph = parse_edge_list(FLAGS_graph);
+      parse_edge_list(FLAGS_graph, input_graph);
     } else {
         gflags::ShowUsageWithFlags(argv[0]);
         return -1;
     }
 
-    GraphColor *graph = parse_algorithm_flag(input_graph);
+    GraphColor2 *graph = parse_algorithm_flag2(input_graph);
     if(!graph) {
         gflags::ShowUsageWithFlags(argv[0]);
         return -1;

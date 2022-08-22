@@ -111,3 +111,88 @@ bool GraphColoring::GraphColor::is_colored() {
         return true;
     }
 }
+
+GraphColoring::GraphColor2::GraphColor2()
+{
+}
+
+GraphColoring::GraphColor2::GraphColor2(const std::vector<vector<int>>& inGraph)
+{
+    graph = inGraph;
+    for (size_t i = 0; i < graph.size(); i++)
+    {
+        graph_colors.push_back(-1);
+    }
+
+}
+
+bool GraphColoring::GraphColor2::is_colored()
+{
+    for (size_t i = 0; i < graph.size(); i++)
+    {
+        if (graph_colors[i] == -1)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+int GraphColoring::GraphColor2::get_color(int node)
+{
+    return graph_colors[node];
+}
+
+int GraphColoring::GraphColor2::get_num_colors()
+{
+    int numColors = 0;
+    for (size_t i = 0; i < graph.size(); i++)
+    {
+        if (graph_colors[i]+1 > numColors )
+        {
+            numColors = graph_colors[i]+1;
+        }
+    };
+    return numColors;
+}
+
+bool GraphColoring::GraphColor2::is_valid()
+{
+    if (this->graph_colors.size() == 0 || this->graph.size() != this->graph_colors.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < graph.size(); i++) {
+        if (graph_colors[i] == -1) {
+            return false;
+        }
+        for (size_t j = 0; j < graph[i].size(); j++) {
+            int neiNode = graph[i][j];
+            if (graph_colors[i] == graph_colors[neiNode]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void GraphColoring::GraphColor2::print_chromatic()
+{
+    cout << this->get_algorithm() << " Chromatic Number: " << this->get_num_colors() << endl;
+}
+
+void GraphColoring::GraphColor2::saveColoringCategories(std::string outputFile)
+{
+    size_t numColors = get_num_colors();
+    vector<vector<int>> categories(numColors);
+
+    for (int iV = 0; iV < size(); iV++) {
+        int color = get_color(iV);
+        // in this 
+        categories[color].push_back(iV);
+    }
+
+    nlohmann::json j = categories;
+
+    std::ofstream ofs(outputFile);
+    ofs << j.dump();
+}
