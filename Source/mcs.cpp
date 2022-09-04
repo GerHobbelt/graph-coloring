@@ -104,7 +104,8 @@ map<string,int> GraphColoring::Mcs::color() {
 
 vector<int>& GraphColoring::Mcs2::color()
 {
-    std::list<int> temp_graph;
+    //std::list<int> temp_graph;
+    std::vector<int> temp_graph;
     for (size_t i = 0; i < graph.size(); i++)
     {
         temp_graph.push_back(i);
@@ -114,28 +115,38 @@ vector<int>& GraphColoring::Mcs2::color()
     vector<int> weight(temp_graph.size());
     queue<int> ordering;
 
+    std::cout << "Initializing.\n";
+
     // Initially set the weight of each node to 0
     for (int i = 0; i < weight.size(); ++i) {
         weight[i] = 0;
     }
 
+    std::cout << "Working through all the nodes in the graph to update maximum weight.\n";
+
     // Work through all the nodes in the graph, choosing the node
     // with maximum weight, then add that node to the queue. Increase
     // the weight of the queued nodes neighbors by 1. Continue until
     // every node in the graph has been added to the queue
+
+    int percentage = 0;
     for (int i = 0; i < this->graph.size(); i++) {
         int max_weight = -1;
         int max_vertex = -1;
 
         // Out of the remaining nodes, find the node with the highest weight
         ;
-        std::list<int>::iterator graphIterMaxW;
-        for (std::list<int>::iterator graphIter = temp_graph.begin(); graphIter != temp_graph.end(); graphIter++) {
-            int nodeId = *graphIter;
+        int maxWId;
+        for (int j = 0; j < temp_graph.size(); j++) {
+            int nodeId = temp_graph[j];
+            if (nodeId < 0)
+            {
+                continue;
+            }
             if (weight[nodeId] > max_weight) {
                 max_weight = weight[nodeId];
                 max_vertex = nodeId;
-                graphIterMaxW = graphIter;
+                maxWId = j;
             }
         }
         if (max_vertex == -1) {
@@ -153,8 +164,34 @@ vector<int>& GraphColoring::Mcs2::color()
 
         // Remove the maximum weight node from the graph so that it won't
         // be accidentally added again
-        temp_graph.erase(graphIterMaxW);
+        //temp_graph.erase(graphIterMaxW); // 73010 used 3:21
+        //*graphIterMaxW = -1;             // 73010 used 2:31
+        temp_graph[maxWId] = -1;                // 73010 used 2:10
+
+        //std::cout << i << "  th iteration.\n";
+        if (100.0 * (double)i / this->graph.size() > percentage)
+        {
+            std::cout << percentage << "  finished.\n";
+            percentage += 1;
+
+            // update temp_graph to remove negative ids
+            std::vector<int> temp_graph_new;
+            for (size_t j = 0; j < temp_graph.size(); j++)
+            {
+                if (temp_graph[j] > 0)
+                {
+                    temp_graph_new.push_back(temp_graph[j]);
+                }
+            }
+            temp_graph = std::move(temp_graph_new);
+
+        }
+
     }
+
+    int sizeOrdering = ordering.size();
+    percentage = 0;
+    std::cout << "Work through the queue in order and color each node.\n";
 
     // Work through the queue in order and color each node
     while (!ordering.empty()) {
@@ -189,6 +226,14 @@ vector<int>& GraphColoring::Mcs2::color()
 
         this->graph_colors[min] = color;
         ordering.pop();
+
+        if (100.0 * (double)(sizeOrdering - ordering.size()) / sizeOrdering > percentage)
+        {
+            std::cout << percentage << "  finished.\n";
+            percentage += 1;
+
+        }
+
     }
     return this->graph_colors;
 }
