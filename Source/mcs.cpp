@@ -171,7 +171,7 @@ vector<int>& GraphColoring::Mcs2::color()
         //std::cout << i << "  th iteration.\n";
         if (100.0 * (double)i / this->graph.size() > percentage)
         {
-            std::cout << percentage << "  finished.\n";
+            std::cout << percentage << "%  finished." << endl;
             percentage += 1;
 
             // update temp_graph to remove negative ids
@@ -229,7 +229,7 @@ vector<int>& GraphColoring::Mcs2::color()
 
         if (100.0 * (double)(sizeOrdering - ordering.size()) / sizeOrdering > percentage)
         {
-            std::cout << percentage << "  finished.\n";
+            std::cout << percentage << "%  finished." << endl;;
             percentage += 1;
 
         }
