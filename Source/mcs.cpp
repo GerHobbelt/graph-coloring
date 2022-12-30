@@ -5,6 +5,8 @@
 #include <queue>
 #include <list>
 #include "../Header/mcs.hpp"
+#include <chrono>       // std::chrono::system_clock
+#include <random>
 
 using std::queue;
 using std::cout;
@@ -130,7 +132,21 @@ vector<int>& GraphColoring::Mcs2::color()
     // every node in the graph has been added to the queue
 
     int percentage = 0;
+
+    std::vector<int> coloringOrder(this->graph.size());
+    for (int iNode = 0; iNode < this->graph.size(); iNode++) {
+        coloringOrder[iNode] = iNode;
+
+    }
+
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine e(seed);
+    std::shuffle(std::begin(coloringOrder), std::end(coloringOrder), e);
+
     for (int i = 0; i < this->graph.size(); i++) {
+        int iNode = coloringOrder[i];
+
         int max_weight = -1;
         int max_vertex = -1;
 
@@ -169,7 +185,7 @@ vector<int>& GraphColoring::Mcs2::color()
         temp_graph[maxWId] = -1;                // 73010 used 2:10
 
         //std::cout << i << "  th iteration.\n";
-        if (100.0 * (double)i / this->graph.size() > percentage)
+        if (100.0 * (double)iNode / this->graph.size() > percentage)
         {
             std::cout << percentage << "%  finished." << endl;
             percentage += 1;

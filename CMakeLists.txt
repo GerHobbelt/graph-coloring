@@ -15,6 +15,7 @@ ADD_LIBRARY(graph-coloring SHARED
     Source/tabucol.cpp
     Source/hybrid_dsatur.cpp
     Source/hybrid_lmxrlf.cpp
+	Source/greedy.cpp
 ) 
 
 ADD_EXECUTABLE(color-test
@@ -25,6 +26,7 @@ ADD_EXECUTABLE(color-test
     Tests/tabucol_tests.cpp
     Tests/hybrid_lmxrlf_tests.cpp
     Tests/hybrid_dsatur_tests.cpp
+	Source/greedy.cpp
 )
 
 ADD_EXECUTABLE(color 

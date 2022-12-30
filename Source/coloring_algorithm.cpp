@@ -55,6 +55,24 @@ int GraphColoring::GraphColor::get_color(string node) {
 // Used to print the Chromatic Color
 void GraphColoring::GraphColor::print_chromatic() {
     cout << this->get_algorithm() << " Chromatic Number: " << this->get_num_colors() << endl;
+
+    vector<int> categoriesSize(this->get_num_colors());
+
+    //for (int iV = 0; iV < size(); iV++) {
+    //    int color = get_color(std::to_string(iV+1));
+    //    // in this 
+    //    categories[color-1].push_back(iV);
+    //}
+
+    for (map< string, int >::iterator itr = graph_colors.begin(); itr != graph_colors.end(); itr++) {
+        // std::cout << itr->first << " " << itr->second << endl;
+        categoriesSize[itr->second]++;
+    }
+
+    for (size_t iColor = 0; iColor < this->get_num_colors(); iColor++)
+    {
+        cout << "num nodes in colored category " << iColor << ": " << categoriesSize[iColor] << std::endl;
+    }
 }
 
 // Used to print the color of each node in the graph
@@ -178,6 +196,7 @@ bool GraphColoring::GraphColor2::is_valid()
 void GraphColoring::GraphColor2::print_chromatic()
 {
     cout << this->get_algorithm() << " Chromatic Number: " << this->get_num_colors() << endl;
+
 }
 
 void GraphColoring::GraphColor2::saveColoringCategories(std::string outputFile)
@@ -189,6 +208,11 @@ void GraphColoring::GraphColor2::saveColoringCategories(std::string outputFile)
         int color = get_color(iV);
         // in this 
         categories[color].push_back(iV);
+    }
+
+    for (size_t iColor = 0; iColor < this->get_num_colors(); iColor++)
+    {
+        cout << "num nodes in colored category " << iColor << ": " << categories[iColor].size() << std::endl;
     }
 
     nlohmann::json j = categories;
