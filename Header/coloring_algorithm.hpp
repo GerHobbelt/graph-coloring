@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 
 using std::map;
 using std::string;
@@ -70,7 +71,38 @@ namespace GraphColoring {
         /* Print functions */
         //void print_coloring();
         void print_chromatic();
+        void convertToColoredCategories();
+        float findLargestSmallestCategories(int& biggestCategory, int& smallestCategory);
+        // return the category id of the changable node, not the node id, -1 if not changable 
+        int findChangableNodeInCategory(int sourceColor, int destinationColor);
+        void changeColor(int sourceColor, int categoryId, int destinationColor);
+        bool changable(int node, int destinationColor);
+        void balanceColoredCategories(float minMaxRatio=1.5);
         void saveColoringCategories(std::string outputFile);
+
+        vector<vector<int>> categories;
+        
+    };
+
+    class GraphClustering : public GraphColor2 {
+    public:
+        GraphClustering(const std::vector<vector<int>>& inGraph, const std::vector<vector<float>>& inGraphWeights);
+        void cluster(int Ks);
+        // 1 - sharedVerts / (8 - sharedVerts)
+        vector<vector<float>> graph_weights;
+        // graph_clusters[i] is the cluster that node i belongs to;
+        // if graph_clusters[i] returns -1, the constraint has not been placed in a cluster yet;
+        vector<int> orgGraphNodeClusters;
+        // the new graph made of the clustered nodes
+        vector<vector<int>> clusteredGraph;
+        // the original nodes that each node of the clustered graph contains
+        vector<vector<int>> clusteredGraphNodes;
+        int minimumUnclusteredWeightNode();
+        void saveClusteredColoringCategories(int numColors, vector<int>& clusteredGraphColors, std::string outputFile);
+
+    private:
+        virtual vector<int>& color() { std::cout << "This is a clustering graph, don't use it for coloring!\n"; return graph_colors; }
+        virtual string get_algorithm() { return "clustering"; }
 
     };
 }
