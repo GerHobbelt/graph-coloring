@@ -41,7 +41,7 @@ GraphColor* parse_algorithm_flag(map<string,vector<string>> graph) {
     return nullptr;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, const char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     string banner = "This program attempts to color an input graph using one of the available coloring algorithms";
